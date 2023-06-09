@@ -1,6 +1,7 @@
 from telethon.sync import TelegramClient
 from itertools import count
 import pymysql
+import schedule
 from constant import HOST, NAME_BD, PASSW_HOST, USER_LOG_HOST, API_ID, API_HASH, CHANNEL_ID, MY_URL, MY_URL_2
 
 
@@ -186,9 +187,21 @@ def text_zapis(value, key=1):
         print(ex)
 
 
-if __name__ == '__main__':
+def zapusk():
     text_telegram_one = telegram_scraper_one()
     text_telegram_two = telegram_scraper_two()
     text_telegram_list = [text_telegram_one, text_telegram_two]
     for text_telegram in text_telegram_list:
         text_zapis(connect_bd_skidka(text_telegram), 1)
+
+
+def main():
+    ''' Функция для автозапуска кода по рассписаниею '''
+    schedule.every(2).minutes.do(zapusk)
+
+    while True:
+        schedule.run_pending()
+
+
+if __name__ == '__main__':
+    main()
