@@ -196,12 +196,15 @@ def zapusk():
 
 
 def main():
-    ''' Функция для автозапуска кода по рассписаниею '''
-    schedule.every(59).minutes.do(zapusk)
+   zapusk()
 
-    while True:
-        schedule.run_pending()
+   # ''' Функция для автозапуска кода по рассписаниею '''
+    #schedule.every(59).minutes.do(zapusk)
+
+    #while True:
+        #schedule.run_pending()
 
 
 if __name__ == '__main__':
     main()
+    
