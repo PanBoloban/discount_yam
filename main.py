@@ -197,7 +197,7 @@ def zapusk():
 
 def main():
     ''' Функция для автозапуска кода по рассписаниею '''
-    schedule.every(2).minutes.do(zapusk)
+    schedule.every(59).minutes.do(zapusk)
 
     while True:
         schedule.run_pending()
