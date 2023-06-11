@@ -1,35 +1,51 @@
 import vk_api
-from telethon import TelegramClient, events, sync
+from telethon import TelegramClient, events
 from constant import TOKEN_VK, API_ID, API_HASH, CHANNEL_ID, GROUP_VK_ID
 
 
+# Данные доступа VK API
+TOKEN_VK = TOKEN_VK
+GROUP_ID = GROUP_VK_ID
+
+# Данные доступа Telegram API
+TELEGRAM_API_ID = API_ID
+TELEGRAM_API_HASH = API_HASH
+# ID вашего канала Telegram
+CHANNEL_ID = CHANNEL_ID
+
+
+# Функция для отправки сообщения в группу VK
 def post_to_vk_group(access_token, group_id, text):
-    # Создаем сессию VK API
     vk_session = vk_api.VkApi(token=access_token)
     vk = vk_session.get_api()
-
-    # Отправляем сообщение в группу ВКонтакте
     vk.wall.post(owner_id='-' + group_id, message=text)
 
 
-# Вставьте свои API_ID и API_HASH
-api_id = API_ID
-api_hash = API_HASH
+# Создаем объект клиента Telegram
+client = TelegramClient('session_name', TELEGRAM_API_ID, TELEGRAM_API_HASH)
 
-# Создание объекта клиента
-client = TelegramClient('session_name.session', api_id, api_hash)
+# Запускаем клиента Telegram
+client.start()
 
-# Связываем обработчик сообщений, который будет вызываться при получении новых сообщений
+
+# Выполнение процесса авторизации
+if not client.is_user_authorized():
+    client.send_code_request('<ваш номер телефона>')
+    client.sign_in('<ваш номер телефона>', input('Введите код подтверждения: '))
+else:
+    print(' Уже идетифицирован ')
+
+# Функция для обработки новых сообщений в канале Telegram
 @client.on(events.NewMessage(chats=CHANNEL_ID))
 async def my_event_handler(event):
-    # Вызов функции
-    post_to_vk_group(access_token=TOKEN_VK,group_id=GROUP_VK_ID,text='экскаватор_2')
-    await client.send_message(event.chat_id, 'Сообщение получено и обработано!')
+    # Вызываем функцию для отправки сообщения в группу VK
+    post_to_vk_group(access_token=TOKEN_VK, group_id=GROUP_ID, text='экскаватор_2')
+    print('работаю')
+    await event.respond('Сообщение получено и обработано!')
 
-# Запускаем клиента
-client.start()
+
+
+# Запуск цикла обработки событий клиента Telegram
 client.run_until_disconnected()
-
-
 
 
